@@ -19,4 +19,7 @@ public interface IUsuarioService {
 
     // Elimina un usuario dado un ID de usuario
     public void remove(Integer id);
+
+    // Devuelve una lista con los NOMBRES de las unidades de un usuario dado su ID
+    public List<String> getUnitsNameOfUserById(Integer id); 
 }

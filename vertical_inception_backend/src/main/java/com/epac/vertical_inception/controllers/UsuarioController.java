@@ -2,14 +2,13 @@ package com.epac.vertical_inception.controllers;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.epac.vertical_inception.models.Unidad;
 import com.epac.vertical_inception.models.Usuario;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +22,7 @@ import com.epac.vertical_inception.services.UsuarioServiceImplementation;
 
 @RestController
 @RequestMapping("/epac/usuario")
+@CrossOrigin
 public class UsuarioController {
 
     // Inyeccion de dependencias
@@ -69,36 +69,6 @@ public class UsuarioController {
 
     @GetMapping("/getUnitsOfUserById/{id}")
     public List<String> getUnitsOfUserById(@PathVariable Integer id) {
-        return usuarioserviceimplementation.getById(id).getUnidades().stream()
-                .map(Unidad::getNombre_unidad)
-                .collect(Collectors.toList());
+        return usuarioserviceimplementation.getUnitsNameOfUserById(id);
     }
-    
-
-    @GetMapping("/getUnitsOfAllUsers")
-    public List<UsuarioDTO> getUnitsOfUsuario() {
-        return usuarioserviceimplementation.getAll().stream()
-                .map(usuario -> new UsuarioDTO(usuario.getNombre_usuario(), usuario.getUnidades().stream()
-                        .map(Unidad::getNombre_unidad)
-                        .collect(Collectors.toList())))
-                .collect(Collectors.toList());
-    }
-
-    // Data Transfer Object. Es un patron de diseno. Es para hacer una clase que sirva de "contenedor"
-    public static class UsuarioDTO {
-        private String nombre_usuario;
-        private List<String> nombre_unidades_a_las_que_pertenece;
-
-        public UsuarioDTO(String nombre_usuario, List<String> nombre_unidades_a_las_que_pertenece) {
-            this.nombre_usuario = nombre_usuario;
-            this.nombre_unidades_a_las_que_pertenece = nombre_unidades_a_las_que_pertenece;
-        }
-
-        // Getters y setters
-
-        public String getNombre_usuario() { return this.nombre_usuario; }
-        public List<String> getNombre_unidades_a_las_que_pertenece() { return this.nombre_unidades_a_las_que_pertenece; }
-
-        public void setNombre_usuario(String nombre_usuario) { this.nombre_usuario = nombre_usuario; }
-        public void setNombre_unidades_a_las_que_pertenece(List<String> nombre_unidades_a_las_que_pertenece) { this.nombre_unidades_a_las_que_pertenece = nombre_unidades_a_las_que_pertenece; }
-    }}   
+}   

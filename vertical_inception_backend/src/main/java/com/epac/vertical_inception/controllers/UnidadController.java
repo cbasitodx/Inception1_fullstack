@@ -8,6 +8,7 @@ import com.epac.vertical_inception.models.Unidad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import com.epac.vertical_inception.services.UnidadServiceImplementation;
 
 @RestController
 @RequestMapping("/epac/unidad")
+@CrossOrigin
 public class UnidadController {
 
     // Inyeccion de dependencias
@@ -43,6 +45,7 @@ public class UnidadController {
        Unidad unidadPorId = unidadserviceimplementation.getById(id);
        return ResponseEntity.ok(unidadPorId); 
     }
+    
     @PutMapping("/updateGivenId/{id}")
     public ResponseEntity<Unidad> updateUnidad(@PathVariable Integer id, @RequestBody Unidad unidad) {
         Unidad unidadPorId = unidadserviceimplementation.getById(id);

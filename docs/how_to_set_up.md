@@ -2,25 +2,11 @@
 
 En esta pequena guia explicare, para los futuros devs y para mi "yo" del futuro, como se levanto este proyecto.
 
-## DOCKER:
-
-El video tutorial seguido es <a href="https://www.youtube.com/watch?v=ux1uzPAMRzk"> este </a>
-
-1. El primer paso es montar la **imágen docker** de mysql: ``` docker pull mysql ```
-
-2. Creamos el contenedor de mysql: ```  docker run -d -p 13306:3306 --name mysql_container -e MYSQL_ROOT_PASSWORD=admin1234 mysql:8.0.34 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci ```
-
-    Aqui estamos indicando que hay que correrlo en segundo plano (```-d```), que vamos a conectar los puertos 13306 (puerto expuesto fuera del contenedor para hacer peticiones) con el 3306 (puerto de mysql) (``` -p 13306:3306```), el nombre del contenedor (``` --name ...```), una variable de entorno con la contraseña de root (```MYSQL_ROOT_PASSWORD=secret```) (en mi caso voy a usar admin1234), indicamos la imagen de la cual crearemos el contenedo (```mysql:8.0.34```) (el número de versión es 8.0.34 por temas de compatibilidad con el workbench (el gestor que YO uso). Puedes no poner nada o poner 'latest'), y el resto es parafernalia.
-
-3. Una vez creado el contenedor (tarda un ratillo) debemos acceder a mysql desde la terminal para crear un usuario con el cual poder validarnos al intentar acceder a la BBDD. Para ello, accedemos al cliente de mysql en el contenedor con: ```docker exec -it mysql_container mysql -uroot -p``` **OJO, SI ERES DE WINDOWS EJECUTA:** ```winpty docker exec -it mysql_container mysql -uroot -p```
-
-4. Una vez ejecutado nos pedirá el password establecido anteriormente. Lo introducimos y creamos el usuario de la siguiente forma: ```create user 'mysqluser' identified by 'secret';```. Podemos cambiar el nombre (```'mysqluser'```) y el pass (```'secret'```). Yo en este caso voy a usar de nombre 'mysql_admin' y de pass 'admin1234'.
-
-5. Luego, le damos TODOS los permisos  ```GRANT ALL PRIVILEGES ON *.* TO 'mysqluser'@'%';``` Hecho esto ya podemos salir (Ctrl + D o escribimos ```exit```)
+## DOCKER MYSQL
 
 ## MYSQL
 
-Ahora va a tocar crear la base de datos y poblarla. Para hacerlo, conviene conectarse desde un cliente gráfico. Por ejemplo, con MySQL Workbench.
+Vamos a crear la base de datos y poblarla. Para hacerlo, conviene conectarse desde un cliente gráfico. Por ejemplo, con MySQL Workbench.
 
 1. Abrimos MySQL workbench y añadimos una nueva conexión con los siguientes parámetros:
     * Connection name: mysql_container
@@ -92,10 +78,15 @@ Para esta parte estoy siguiendo, parcialemente,  <a href="https://www.youtube.co
         ``` 
         Donde ```name``` es el nombre de la tabla intermedia que genera la relación (**OJO!!! SI EN ESTE PUNTO TIENES EN LAS OPCIONES ```spring.jpa.hibernate.ddl-auto = validate```, ENTONCES HIBERNATE VA A INTENTAR ALTERAR LA TABLA INTERMEDIA, LO CUAL ES MUY MOLESTO. PONER A ```none``` O A ```validate```**). Luego, ```joinColumns``` tiene en ```name``` el nombre de la primary key de la entidad "propietaria" y ```inverseJoinColumns``` tiene en ```name``` el nombre de la primary key de la entidad "no-propietaria"
 
-5. Ahora, una vez montado el backend, sólo queda dockerizar la API Rest que acabamos de crear. Para ello:
-    1. Creamos una red en la que va a estar el contendor de mysql y el contenedor con la API. En un futuro también estará el contenedor del frontend. Para ello ejecutamos ```docker network create --driver bridge my-net```, donde ```my-net``` es el nombre que le quieras poner a la red (yo mantendré ese nombre).
+## DOCKER SPRINGBOOT
 
-    2. Ahora tenemos que cambiar de red al contendor mysql, para ello primero lo desconectamos de la red bridge con ```docker network disconnect bridge mysql_container``` , donde ```mysql_container``` es el nombre del contenedor mysql. Ahora lo conectamos a la red creada con ```docker network connect my-net mysql_container```
+## FRONTEND
 
-    3. Ahora hay que compilar la API en un jar para subirla en un contenedor
+* DEPENDENCIAS: 
+    * Material UI: ```npm install @mui/material @emotion/react @emotion/styled```
 
+    * Material UI Icons: ```npm install @mui/icons-material```
+
+    * BUEN TUTO REACT https://www.youtube.com/watch?v=O_XL9oQ1_To
+
+## DOCKER FRONTEND
