@@ -2,16 +2,19 @@
 
 En esta pequena guia explicare, para los futuros devs y para mi "yo" del futuro, como se levanto este proyecto.
 
-## DOCKER MYSQL
+## DOCKER
+
+Para empezar, ejecutamos el comando ```docker-compose up```, eso va a crearnos las imágenes del contenedor de la base de datos mysql y el frontend en react. Además de crear dichos contenedores y crear un volumen para el contenedor de mysql.
+En el contenedor de mysql se nos creará el usario ```mysql_admin``` con contraseña ```admin1234```.
 
 ## MYSQL
 
-Vamos a crear la base de datos y poblarla. Para hacerlo, conviene conectarse desde un cliente gráfico. Por ejemplo, con MySQL Workbench.
+Vamos a poblar la base de datos. Para hacerlo, conviene conectarse desde un cliente gráfico. Por ejemplo, con MySQL Workbench.
 
 1. Abrimos MySQL workbench y añadimos una nueva conexión con los siguientes parámetros:
     * Connection name: mysql_container
     * Hostname: localhost (127.0.0.1)
-    * Port: 13306 (el que hemos establecido antes al crear el contenedor!)
+    * Port: 23306 (el que hemos establecido antes al crear el contenedor!)
     * username: mysql_admin (el que hemos creado)
     * para la contraseña, hacemos click en *store in vault* y ponemos la contraseña creada antes (en mi caso admin1234).
 
@@ -23,7 +26,7 @@ Vamos a crear la base de datos y poblarla. Para hacerlo, conviene conectarse des
 
 ## SPRINGBOOT
 
-Ahora toca el momento de ponerse las *botas* (badum tss) y hacer el pequeño backend de nuestra aplicación. El backend se va a encargar de hablar con la base de datos y, obviamente, será su propio contenedor.
+Ahora toca el momento de ponerse las *botas* (badum tss) y hacer el pequeño backend de nuestra aplicación. El backend se va a encargar de hablar con la base de datos y, obviamente, será su propio contenedor (cuando consiga dockerizarlo).
 
 Para esta parte estoy siguiendo, parcialemente,  <a href="https://www.youtube.com/watch?v=g_zoy9m0KMs"> este </a> tutorial 
 
@@ -44,7 +47,8 @@ Para esta parte estoy siguiendo, parcialemente,  <a href="https://www.youtube.co
 
 3. Ahora tenemos que acceder al fichero **src>main>resources>application.properties** para poder configurar la conexión con la BBDD. Ahí vamos a copiar (después de la primera línea que viene por defecto, en caso de haberla) lo siguiente: 
     ```
-    spring.datasource.url=jdbc:mysql://localhost:13306/pac_db
+    spring.application.name=vertical_inception
+    spring.datasource.url=jdbc:mysql://localhost:23306/pac_db
     spring.datasource.username=mysql_admin
     spring.datasource.password=admin1234
     spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
@@ -78,15 +82,16 @@ Para esta parte estoy siguiendo, parcialemente,  <a href="https://www.youtube.co
         ``` 
         Donde ```name``` es el nombre de la tabla intermedia que genera la relación (**OJO!!! SI EN ESTE PUNTO TIENES EN LAS OPCIONES ```spring.jpa.hibernate.ddl-auto = validate```, ENTONCES HIBERNATE VA A INTENTAR ALTERAR LA TABLA INTERMEDIA, LO CUAL ES MUY MOLESTO. PONER A ```none``` O A ```validate```**). Luego, ```joinColumns``` tiene en ```name``` el nombre de la primary key de la entidad "propietaria" y ```inverseJoinColumns``` tiene en ```name``` el nombre de la primary key de la entidad "no-propietaria"
 
-## DOCKER SPRINGBOOT
-
 ## FRONTEND
 
-* DEPENDENCIAS: 
-    * Material UI: ```npm install @mui/material @emotion/react @emotion/styled```
+Lo haremos con el framework de javascript react, y para ello bastará con hacer una interfaz muy sencilla que nos permita llamar a nuestra API directamente accediendo a los endpoints. En un futuro esta parte será bastante más compleja. 
 
-    * Material UI Icons: ```npm install @mui/icons-material```
+Yo he seguido <a href="https://www.youtube.com/watch?v=O_XL9oQ1_To"> este </a> tutorial. El resto he tirado de documentación.
 
-    * BUEN TUTO REACT https://www.youtube.com/watch?v=O_XL9oQ1_To
+## Cómo hacer que el frontend sea funcional?
 
-## DOCKER FRONTEND
+Sencillamente:
+1. Desplegamos el contenedor mysql (la base de datos ya debería estar poblada)
+2. Iniciamos la api con maven
+3. Desplegamos el contenedor con react
+4. Accedemos a la página web ```http://localhost:5000```
